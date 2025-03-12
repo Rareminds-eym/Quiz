@@ -33,7 +33,7 @@ export interface Course {
   title: string;
   description: string;
   icon: React.ElementType;
-  courseId: number;
+  courseId: number | string;
 }
 
 export interface TestAnswer {
@@ -46,7 +46,7 @@ export interface TestAnswer {
 export interface TestAttempt {
   id: string;
   userId: string;
-  courseId: string;
+  courseId: string | number;
   startTime: Date;
   endTime: Date;
   totalTime: number; // Total time taken in seconds

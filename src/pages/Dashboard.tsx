@@ -85,7 +85,7 @@ const Dashboard: React.FC = () => {
           <div className="flex items-center">
             <img src="/bulb.png" className="h-14 text-blue-600 mr-3" alt="Rareminds" />
             <h1 className="text-xl font-bold text-gray-900 font-serif">
-              Rareminds Hackathon Portal
+              Rareminds Assessment Portal
             </h1>
           </div>
           <UserProfile />
@@ -99,11 +99,11 @@ const Dashboard: React.FC = () => {
               <Code className="h-10 w-10 text-white" />
             </div>
             <h1 className="text-4xl font-bold text-white mb-6 font-serif">
-              Welcome to Your Hackathon Portal
+              Welcome to Your Assessment Portal
             </h1>
-            <p className="text-lg text-blue-100">
+            {/*<p className="text-lg text-blue-100">
               Select a course below to begin your assessment.
-            </p>
+            </p>*/}
           </motion.div>
         </div>
 
@@ -122,7 +122,7 @@ const Dashboard: React.FC = () => {
 
         <div>
           <h2 className="text-2xl font-bold text-gray-900 mb-8 font-serif">
-            Available Hackathons
+            Available Assessments
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {loadCourse &&
