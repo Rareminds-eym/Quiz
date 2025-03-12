@@ -1,4 +1,10 @@
-import React, { createContext, useState, useContext, ReactNode, useEffect } from "react";
+import React, {
+  createContext,
+  useState,
+  useContext,
+  ReactNode,
+  useEffect,
+} from "react";
 import {
   getAuth,
   createUserWithEmailAndPassword,
@@ -25,7 +31,9 @@ const db = getFirestore(app);
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const AuthProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
   const [user, setUser] = useState<User | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [loading, setLoading] = useState(true);
@@ -83,7 +91,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const login = async (email: string, password: string) => {
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
       const userData = userCredential.user;
 
       if (!userData.emailVerified) {
@@ -100,22 +112,32 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     nmId: string,
     email: string,
     password: string,
-    teamname: string
+    teamname: string,
+    name: string
   ) => {
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
       const newUser = userCredential.user;
 
       await sendEmailVerification(newUser);
 
       const userData: User = {
         id: newUser.uid,
-        nmId,
+        RollNo: nmId,
         email,
-        teamname
+        college: teamname,
+        name,
       };
 
-      await setDoc(doc(db, "users", nmId), userData);
+      await setDoc(doc(db, "users", nmId), userData)
+        .then()
+        .catch((err) => {
+          console.log(err);
+        });
 
       // Don't set user state here - wait for email verification
       return "Signup successful! Please verify your email before logging in.";
@@ -138,7 +160,16 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }
 
   return (
-    <AuthContext.Provider value={{ user, login, signup, logout, isAuthenticated, setIsAuthenticated }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        login,
+        signup,
+        logout,
+        isAuthenticated,
+        setIsAuthenticated,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

@@ -1,8 +1,9 @@
 export interface User {
   id: string;
-  nmId: string;
+  RollNo: string;
   email: string;
-  teamname: string;
+  college: string;
+  name: string;
 }
 
 export interface AuthContextType {
@@ -12,7 +13,8 @@ export interface AuthContextType {
     nmId: string,
     email: string,
     password: string,
-    teamname: string
+    teamname: string,
+    name: string
   ) => Promise<string>;
   logout: () => void;
   isAuthenticated: boolean;

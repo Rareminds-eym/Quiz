@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import {
   Mail,
@@ -34,6 +34,9 @@ const SignupForm: React.FC = () => {
   const [viewPassword, setViewPassword] = useState(false);
   const [phone, setPhone] = useState("");
 
+  const errorRef = useRef<HTMLDivElement>(null);
+  const successRef = useRef<HTMLDivElement>(null);
+
   // const [username, setUsername] = useState("");
   // const [sem, setSem] = useState("");
 
@@ -44,15 +47,32 @@ const SignupForm: React.FC = () => {
   const [teamname, setTeamname] = useState("");
   const [upload, setUpload] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
+  const [name, setName] = useState("");
   const navigate = useNavigate();
   const [studentData, setStudentData] = useState<any>(null);
+
+  const scrollToErrorRef = () => {
+    errorRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const scrollToSuccessRef = () => {
+    errorRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setSuccess("");
 
-    if (!rollNo || !email || !password || !teamname || !rePassword || !phone) {
+    if (
+      !rollNo ||
+      !email ||
+      !password ||
+      !teamname ||
+      !rePassword ||
+      !phone ||
+      !name
+    ) {
       setError("Please fill in all fields");
       return;
     }
@@ -64,42 +84,7 @@ const SignupForm: React.FC = () => {
 
     try {
       setIsLoading(true);
-      // console.log(nmId);
-
-      try {
-        // const nmSnap = await getDoc(nmRef);
-
-        const studentsRef = collection(db, "nm-students");
-        const q = query(
-          studentsRef,
-          where("StudentRollNo", "==", rollNo),
-          limit(1)
-        ); // Query with where and limit(1)
-        const querySnapshot = await getDocs(q);
-
-        if (querySnapshot.empty) {
-          // console.log("No student found with this roll number.");
-          setError("Roll number not found in records. Please contact the admin.");
-          return null;
-        }
-
-        const student: any = {
-          id: querySnapshot.docs[0].id,
-          ...querySnapshot.docs[0].data(),
-        };
-        console.log("Fetched Student:", student);
-
-        setStudentData(student);
-
-        setNmId(student.NMId);
-        // setUpload(true);
-        setShowInfo(true);
-      } catch (err: any) {
-        console.log("Error fetching Firestore document: ", err);
-        setError(err.message || "Failed to create an account");
-      } finally {
-        setIsLoading(false);
-      }
+      setUpload(true);
     } catch (err: any) {
       setError(err.message || "Failed to create an account");
     } finally {
@@ -110,23 +95,26 @@ const SignupForm: React.FC = () => {
   useEffect(() => {
     try {
       if (upload) {
-        console.log("upload", upload);
+        // console.log("upload", upload);
         const addRecords = async () => {
-          await signup(nmId, email, password, teamname)
+          await signup(rollNo, email, password, teamname, name)
             .then(() => {
               setSuccess(
                 "Account created! Please verify your email before logging in."
               );
+              scrollToSuccessRef();
               setTimeout(() => navigate("/login"), 3000);
             })
             .catch((error) => {
               setError(error.message || "Failed to create account");
+              scrollToErrorRef();
             });
         };
         addRecords();
       }
     } catch (err: any) {
       setError(err.message || "Failed to Upload Records");
+      scrollToErrorRef();
     } finally {
       setIsLoading(false);
     }
@@ -157,12 +145,20 @@ const SignupForm: React.FC = () => {
         </div>
 
         {error && (
-          <div className="p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+          <div
+            ref={errorRef}
+            id="errorMsg"
+            className="p-3 bg-red-100 border border-red-400 text-red-700 rounded"
+          >
             {error}
           </div>
         )}
         {success && (
-          <div className="p-3 bg-green-100 border border-green-400 text-green-700 rounded">
+          <div
+            ref={successRef}
+            id="successMsg"
+            className="p-3 bg-green-100 border border-green-400 text-green-700 rounded"
+          >
             {success}
           </div>
         )}
@@ -188,6 +184,30 @@ const SignupForm: React.FC = () => {
                 onChange={(e) => setRollNo(e.target.value)}
                 className="pl-10 block w-full py-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                 placeholder="Enter your roll number"
+              />
+            </div>
+          </div>
+
+          {/* Username Input */}
+          <div>
+            <label
+              htmlFor="fullname"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Full Name
+            </label>
+            <div className="mt-1 relative rounded-md shadow-sm">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <User className="h-5 w-5 text-gray-400" />
+              </div>
+              <input
+                id="fullname"
+                type="text"
+                required
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="pl-10 block w-full py-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Enter full name"
               />
             </div>
           </div>
@@ -285,36 +305,12 @@ const SignupForm: React.FC = () => {
             </div>
           </div>
 
-          {/* Username Input */}
-          {/* <div>
-          <label
-            htmlFor="username"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Username
-          </label>
-          <div className="mt-1 relative rounded-md shadow-sm">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <User className="h-5 w-5 text-gray-400" />
-            </div>
-            <input
-              id="username"
-              type="text"
-              required
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              className="pl-10 block w-full py-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Enter Username"
-            />
-          </div>
-        </div> */}
-
           <div>
             <label
               htmlFor="teamname"
               className="block text-sm font-medium text-gray-700"
             >
-              Team Name
+              College Name
             </label>
             <div className="mt-1 relative rounded-md shadow-sm">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -327,7 +323,7 @@ const SignupForm: React.FC = () => {
                 value={teamname}
                 onChange={(e) => setTeamname(e.target.value)}
                 className="pl-10 block w-full py-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Enter team Name"
+                placeholder="Enter college Name"
               />
             </div>
           </div>
