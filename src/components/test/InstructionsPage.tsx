@@ -32,7 +32,7 @@ const InstructionsPage: React.FC<InstructionsPageProps> = ({ onContinue }) => {
           <div className="bg-gradient-to-r from-blue-600 to-indigo-700 px-6 py-8 sm:px-8 text-center">
             <h3 className="text-2xl font-bold text-white flex items-center justify-center gap-2">
               <BookOpen className="w-6 h-6" />
-              Hackathon Instructions
+              Assessment Instructions
             </h3>
             <p className="mt-2 text-blue-100">
               Please read all instructions carefully before proceeding
@@ -44,10 +44,10 @@ const InstructionsPage: React.FC<InstructionsPageProps> = ({ onContinue }) => {
             <div className="space-y-6">
               <div className="text-center">
                 <h4 className="text-lg font-semibold text-gray-900 mb-2 font-serif">
-                  Welcome to the Hackathon!
+                  Welcome to the Assessment!
                 </h4>
                 <p className="text-gray-600">
-                  This hackathon will evaluate your understanding of the subject
+                  This Assessment will evaluate your understanding of the subject
                   matter.
                 </p>
               </div>
@@ -62,12 +62,12 @@ const InstructionsPage: React.FC<InstructionsPageProps> = ({ onContinue }) => {
                   <li className="flex items-start gap-2">
                     <Clock className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
                     <span>
-                      <strong>Total Duration: 15 minutes</strong>
+                      <strong>Total Duration: 30 minutes</strong>
                     </span>
                   </li>
                   <li className="flex items-start gap-2">
                     <CheckCircle className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
-                    <span>First 10 minutes for answering questions</span>
+                    <span>First 30 minutes for answering questions</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <CheckCircle className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
@@ -87,7 +87,7 @@ const InstructionsPage: React.FC<InstructionsPageProps> = ({ onContinue }) => {
               {/* Quiz Format */}
               <div className="border-l-4 border-blue-600 pl-4 py-2">
                 <h4 className="font-semibold text-gray-900 mb-2 font-serif">
-                Hackathon Format
+                Assessment Format
                 </h4>
                 <ul className="space-y-2 text-gray-600">
                   <li className="flex items-start gap-2">
@@ -122,13 +122,13 @@ const InstructionsPage: React.FC<InstructionsPageProps> = ({ onContinue }) => {
                     <Camera className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
                     <span>
                       Camera access is required for proctoring purposes
-                      throughout the hackathon
+                      throughout the assessment
                     </span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Mic className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
                     <span>
-                      Microphone access is required to monitor the hackathon
+                      Microphone access is required to monitor the assessment
                       environment
                     </span>
                   </li>
@@ -136,14 +136,14 @@ const InstructionsPage: React.FC<InstructionsPageProps> = ({ onContinue }) => {
                     <MonitorX className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
                     <span>
                       Switching tabs or opening other applications during the
-                      hackathon is strictly prohibited
+                      assessment is strictly prohibited
                     </span>
                   </li>
                   <li className="flex items-start gap-2">
                     <AlertTriangle className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
                     <span>
                       Three violations of these rules will result in automatic
-                      hackathon submission
+                      assessment submission
                     </span>
                   </li>
                 </ul>
@@ -159,15 +159,15 @@ const InstructionsPage: React.FC<InstructionsPageProps> = ({ onContinue }) => {
                     </h4>
                     <ul className="space-y-1 text-yellow-700">
                       <li>
-                        • The hackathon will automatically switch to review mode
+                        • The assessment will automatically switch to review mode
                         in the last 5 minutes
                       </li>
                       <li>
-                        • The hackathon will be automatically submitted when
+                        • The assessment will be automatically submitted when
                         time expires
                       </li>
                       <li>
-                        • Complete the hackathon in one session - your progress
+                        • Complete the assessment in one session - your progress
                         will be lost if you close the browser
                       </li>
                       <li>
@@ -183,7 +183,7 @@ const InstructionsPage: React.FC<InstructionsPageProps> = ({ onContinue }) => {
                       </li>
                       <li>
                         • Ensure stable internet connection throughout the
-                        hackathon
+                        assessment
                       </li>
                     </ul>
                   </div>

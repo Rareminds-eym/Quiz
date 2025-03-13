@@ -140,7 +140,7 @@ const SignupForm: React.FC = () => {
             Create an Account
           </h1>
           <p className="mt-2 text-gray-600">
-            Sign up to start your online Hackathon
+            Sign up to start your online Assessment
           </p>
         </div>
 

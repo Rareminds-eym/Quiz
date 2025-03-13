@@ -73,7 +73,7 @@ const TestPage: React.FC = () => {
   const [timeTakenPerQuestion, setTimeTakenPerQuestion] = useState<number[]>(
     []
   );
-  const [totalTimeLeft, setTotalTimeLeft] = useState(900);
+  const [totalTimeLeft, setTotalTimeLeft] = useState(1800);
   const [submit, setSubmit] = useState<boolean>(false);
 
   // Warning and modal state
@@ -491,7 +491,7 @@ const TestPage: React.FC = () => {
                 {!showContactForm ? (
                   <>
                     <div className="space-y-4 text-sm text-gray-600">
-                      <p>• Total time limit is 15 minutes</p>
+                      <p>• Total time limit is 30 minutes</p>
                       <p>
                         • You can navigate between questions using the number
                         buttons or Previous/Next
