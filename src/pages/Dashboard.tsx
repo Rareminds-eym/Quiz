@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import UserProfile from "../components/UserProfile";
 import CourseCard from "../components/CourseCard";
 import { courses } from "../data/courses";
-import { Course } from "../types";
+import { Course, User } from "../types";
 import { fetchStudentById } from "../composables/helpers";
 import { useAuth } from "../context/AuthContext";
 import { doc, getDoc, Timestamp } from "firebase/firestore";
@@ -14,15 +14,15 @@ import { db } from "../firebaseConfig";
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [userData, setUserData] = useState<any>();
+  const [userData, setUserData] = useState<User | null>(null);
   const [loadCourse, setLoadCourse] = useState(false);
   const [countdown, setCountdown] = useState<string | null>(null);
   const [testStarted, setTestStarted] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
-      if (user?.nmId) {
-        const data = await fetchStudentById(user.nmId);
+      if (user?.RollNo) {
+        const data = await fetchStudentById(user.RollNo);
         if (data) {
           setUserData(data);
           setLoadCourse(true);
@@ -30,12 +30,12 @@ const Dashboard: React.FC = () => {
       }
     };
     fetchData();
-  }, [user?.nmId]);
+  }, [user?.RollNo]);
 
   useEffect(() => {
     const fetchStartTime = async () => {
       try {
-        const settingsRef = doc(db, "assessment_settings","global_timing" );
+        const settingsRef = doc(db, "assessment_settings", "global_timing");
         const settingsSnap = await getDoc(settingsRef);
 
         if (settingsSnap.exists()) {
@@ -47,7 +47,10 @@ const Dashboard: React.FC = () => {
             console.log("Converted startDate:", startDate);
 
             updateCountdown(startDate);
-            const interval = setInterval(() => updateCountdown(startDate), 1000);
+            const interval = setInterval(
+              () => updateCountdown(startDate),
+              1000
+            );
             return () => clearInterval(interval);
           } else {
             console.error("Invalid startTime format:", startTime);
@@ -83,9 +86,13 @@ const Dashboard: React.FC = () => {
       <header className="bg-white shadow">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
           <div className="flex items-center">
-            <img src="/bulb.png" className="h-14 text-blue-600 mr-3" alt="Rareminds" />
+            <img
+              src="/bulb.png"
+              className="h-14 text-blue-600 mr-3"
+              alt="Rareminds"
+            />
             <h1 className="text-xl font-bold text-gray-900 font-serif">
-              Rareminds Hackathon Portal
+              Rareminds Assessment Portal
             </h1>
           </div>
           <UserProfile />
@@ -94,44 +101,55 @@ const Dashboard: React.FC = () => {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-lg px-6 py-12 mb-12 text-center">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
             <div className="inline-block p-4 bg-white/20 rounded-full mb-6">
               <Code className="h-10 w-10 text-white" />
             </div>
             <h1 className="text-4xl font-bold text-white mb-6 font-serif">
-              Welcome to Your Hackathon Portal
+              Welcome to Your Assessment Portal
             </h1>
-            <p className="text-lg text-blue-100">
+            {/*<p className="text-lg text-blue-100">
               Select a course below to begin your assessment.
-            </p>
+            </p>*/}
           </motion.div>
         </div>
 
         {/* Countdown Timer */}
         <div className="text-center mb-8">
           {testStarted ? (
-            <h2 className="text-2xl font-bold text-green-600">✅ Test has started!</h2>
+            <h2 className="text-2xl font-bold text-green-600">
+              ✅ Test has started!
+            </h2>
           ) : countdown ? (
             <h2 className="text-2xl font-bold text-gray-900">
-              ⏳ Test starts in: <span className="text-blue-600">{countdown}</span>
+              ⏳ Test starts in:{" "}
+              <span className="text-blue-600">{countdown}</span>
             </h2>
           ) : (
-            <h2 className="text-2xl font-bold text-red-600">⚠️ Unable to fetch test start time!</h2>
+            <h2 className="text-2xl font-bold text-red-600">
+              ⚠️ Unable to fetch test start time!
+            </h2>
           )}
         </div>
 
         <div>
           <h2 className="text-2xl font-bold text-gray-900 mb-8 font-serif">
-            Available Hackathons
+            Available Assessments
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {loadCourse &&
-              courses.map(
-                (course) =>
-                  userData?.CourseID == course.courseId && (
-                    <CourseCard key={course.id} course={course} onSelect={() => navigate("/test")} />
-                  )
-              )}
+              courses.map((course) => (
+                <CourseCard
+                  key={course.id}
+                  course={course}
+                  onSelect={() =>
+                    navigate(`/test/${course.courseId}`)
+                  }
+                />
+              ))}
           </div>
         </div>
       </main>

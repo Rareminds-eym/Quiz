@@ -1,28 +1,39 @@
-import { Question } from '../../types';
-import { collection, query, where, getDocs } from 'firebase/firestore';
-import { db } from '../../firebaseConfig';
+import { Question } from "../../types";
+import { collection, query, where, getDocs } from "firebase/firestore";
+import { db } from "../../firebaseConfig";
 
 // Function to transform Firestore data to Question type
 const transformFirestoreData = (doc: any): Question => {
   const data = doc.data();
+  const _options = [data.OptionA, data.OptionB, data.OptionC, data.OptionD];
+
+  const answerIndexMap: { [key: string]: number } = { A: 0, B: 1, C: 2, D: 3 };
+  const correctAnswerIndex = answerIndexMap[data.CorrectAnswer] ?? -1;
+
   return {
-    id: data.id,
-    text: data.question,
-    options: [data.option1, data.option2, data.option3, data.option4],
-    correctAnswer: data.answer, // Keep as string
+    id: data.Id,
+    text: data.Question,
+    options: _options,
+    correctAnswer:
+      correctAnswerIndex >= 0 ? _options[correctAnswerIndex] : "Invalid Answer", // Keep as string
+    section: data.Section,
   };
 };
 
 // Function to fetch questions for a specific course
 const fetchQuestions = async (courseType: string): Promise<Question[]> => {
+  // console.log(courseType);
   const q = query(
     collection(db, "questions"),
-    where("course", "==", courseType)
+    where("TestId", "==", courseType)
   );
 
   try {
     const querySnapshot = await getDocs(q);
-    const questions = querySnapshot.docs.map(doc => transformFirestoreData(doc));
+    const questions = querySnapshot.docs.map((doc) => {
+      // console.log(doc.data());
+      return transformFirestoreData(doc);
+    });
     return questions.sort((a, b) => a.id - b.id); // Sort by question ID
   } catch (error) {
     console.error(`Error fetching ${courseType} questions:`, error);
@@ -40,23 +51,8 @@ export const getQuestions = async (courseId: string): Promise<Question[]> => {
     return questionsCache[courseId];
   }
 
-  // Map courseId to Firestore course type
-  const courseTypeMap: Record<string, string> = {
-    'csevbm': 'CSEVBM',
-    'green-chemistry': 'SGCEV',
-    'ev-battery-management': 'EVBM',
-    'organic-food': 'OFP',
-    'food-analysis': 'FAPP'
-  };
-
-  const courseType = courseTypeMap[courseId];
-  if (!courseType) {
-    console.error(`Invalid course ID: ${courseId}`);
-    return [];
-  }
-
   // Fetch questions and store in cache
-  const questions = await fetchQuestions(courseType);
+  const questions = await fetchQuestions(courseId);
   questionsCache[courseId] = questions;
   return questions;
 };

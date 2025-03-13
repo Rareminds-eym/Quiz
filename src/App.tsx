@@ -98,7 +98,7 @@ function App() {
                   }
                 />
                 <Route
-                  path="/test"
+                  path="/test/:courseId"
                   element={
                     <ProtectedRoute>
                       <TestPage />

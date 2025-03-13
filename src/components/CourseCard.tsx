@@ -53,7 +53,7 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, onSelect }) => {
   }, []);
 
   const handleStartTest = async () => {
-    if (!user?.nmId) {
+    if (!user?.RollNo) {
       setError("You must be logged in to start the test.");
       return;
     }
@@ -69,7 +69,7 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, onSelect }) => {
     try {
       // Step 1: Check Firestore if nmId already exists in "attempts"
       const attemptsRef = collection(db, "attempts");
-      const q = query(attemptsRef, where("nmId", "==", user.nmId), where("courseId", "==", course.id));
+      const q = query(attemptsRef, where("RollNo", "==", user.RollNo), where("courseId", "==", course.courseId));
       const querySnapshot = await getDocs(q);
 
       if (!querySnapshot.empty) {
@@ -79,7 +79,7 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, onSelect }) => {
       }
 
       // Step 3: If not found, allow test to start
-      navigate("/test", { state: { courseId: course.id } });
+      navigate(`/test/${course.courseId}`);
     } catch (error) {
       console.error("Error checking test attempt:", error);
       setError("Something went wrong. Please try again.");

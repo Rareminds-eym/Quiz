@@ -1,9 +1,10 @@
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../firebaseConfig";
+import { User } from "../types";
 
 export const fetchStudentById = async (nmId: string) => {
   try {
-    const studentRef = doc(db, "nm-students", nmId); // Reference to document
+    const studentRef = doc(db, "users", nmId); // Reference to document
     const studentSnap = await getDoc(studentRef); // Fetch the document
 
     if (!studentSnap.exists()) {
@@ -11,7 +12,7 @@ export const fetchStudentById = async (nmId: string) => {
       return null;
     }
 
-    const studentData = { id: studentSnap.id, ...studentSnap.data() };
+    const studentData = { id: studentSnap.id, ...studentSnap.data() } as User;
     // console.log("Fetched Student:", studentData);
     return studentData;
   } catch (error) {

@@ -4,6 +4,7 @@ export interface User {
   email: string;
   college: string;
   name: string;
+  phone: string;
 }
 
 export interface AuthContextType {
@@ -14,7 +15,8 @@ export interface AuthContextType {
     email: string,
     password: string,
     teamname: string,
-    name: string
+    name: string,
+    phone: string
   ) => Promise<string>;
   logout: () => void;
   isAuthenticated: boolean;
@@ -35,7 +37,7 @@ export interface Course {
   title: string;
   description: string;
   icon: React.ElementType;
-  courseId: number;
+  courseId: number | string;
 }
 
 export interface TestAnswer {

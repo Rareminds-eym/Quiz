@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, useParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ChevronRight,
@@ -26,8 +26,8 @@ import { useTest } from "../context/TestContext";
 import { logEvent } from "firebase/analytics";
 
 interface TestAttempt {
-  nmId: string;
-  courseId: string;
+  RollNo: string;
+  courseId: string | undefined;
   timestamp: Date;
   questions: {
     questionId: number;
@@ -45,7 +45,7 @@ const TestPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
-  const courseId = location.state?.courseId;
+  const { courseId } = useParams();
   const videoRef = useRef<HTMLVideoElement>(null);
   const totalTimerRef = useRef<NodeJS.Timeout | null>(null);
   const questionStartTimeRef = useRef<number>(Date.now());
@@ -295,10 +295,10 @@ const TestPage: React.FC = () => {
     if (submit) {
       try {
         const submitTestAttempt = async (score: number) => {
-          if (!user?.nmId) return;
+          if (!user?.RollNo) return;
 
           const attempt: TestAttempt = {
-            nmId: user.nmId,
+            RollNo: user.RollNo,
             courseId,
             timestamp: new Date(),
             questions: questions.map((q, index) => ({
@@ -315,9 +315,12 @@ const TestPage: React.FC = () => {
 
           try {
             // await addDoc(collection(db, "attempts"), attempt);
-            const attemptRef = doc(db, "attempts", user.nmId);
+            const attemptRef = doc(db, "attempts", user.RollNo);
             await setDoc(attemptRef, attempt); // Save the attempt data
-            console.log("Test attempt saved successfully with ID:", user.nmId);
+            console.log(
+              "Test attempt saved successfully with ID:",
+              user.RollNo
+            );
           } catch (error) {
             console.error("Error submitting test attempt:", error);
           }
@@ -331,7 +334,7 @@ const TestPage: React.FC = () => {
               answer.toString() === questions[index].correctAnswer
           ).length;
 
-          await submitTestAttempt(score).then(()=>{
+          await submitTestAttempt(score).then(() => {
             if (analytics) {
               logEvent(analytics, "submit_test", { course: courseId });
               console.log("Logged Event: Submit Test");

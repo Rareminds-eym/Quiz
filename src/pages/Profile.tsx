@@ -1,28 +1,23 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  User,
+  User as UserIcon,
   Mail,
-  Hash,
-  BookOpen,
-  ArrowLeft,
-  GraduationCap,
-  Users,
   Fingerprint,
   Building,
-  Code,
-  Book,
-  School,
+  Phone,
+  ArrowLeft,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { collection, getDocs, limit, query, where } from "firebase/firestore";
 import { db } from "../firebaseConfig";
+import { User } from "../types";
 
 const Profile: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  const [student, setStudent] = useState<any>();
+  const [student, setStudent] = useState<User | null>();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -34,8 +29,12 @@ const Profile: React.FC = () => {
     const fetchStudents = async () => {
       try {
         setLoading(true);
-        const studentsRef = collection(db, "nm-students");
-        const q = query(studentsRef, where("NMId", "==", user.nmId), limit(1)); // Firestore query
+        const studentsRef = collection(db, "users");
+        const q = query(
+          studentsRef,
+          where("RollNo", "==", user.RollNo),
+          limit(1)
+        );
         const querySnapshot = await getDocs(q);
 
         if (querySnapshot.empty) {
@@ -44,11 +43,12 @@ const Profile: React.FC = () => {
           return;
         }
 
-        const studentsData = querySnapshot.docs.map((doc) => ({
-          // id: doc.id,
-          ...doc.data(),
-        }));
-        // console.log(studentsData[0]);
+        const studentsData = querySnapshot.docs.map(
+          (doc) =>
+            ({
+              ...doc.data(),
+            } as User)
+        );
         setStudent(studentsData[0]);
       } catch (error) {
         setError("Error fetching students.");
@@ -58,12 +58,11 @@ const Profile: React.FC = () => {
       }
     };
 
-    if (user.nmId) fetchStudents();
-  }, [user.nmId]);
+    if (user.RollNo) fetchStudents();
+  }, [user.RollNo]);
 
   return (
     <div className="min-h-screen bg-pattern-chemistry">
-      {/* Header */}
       <header className="bg-white shadow">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center">
           <button
@@ -78,17 +77,16 @@ const Profile: React.FC = () => {
         </div>
       </header>
 
-      {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="bg-white shadow rounded-lg overflow-hidden">
           <div className="px-4 py-5 sm:px-6 bg-gradient-to-r from-blue-600 to-indigo-700">
             <div className="flex items-center">
               <div className="h-16 w-16 rounded-full bg-white bg-opacity-20 flex items-center justify-center">
-                <User className="h-8 w-8 text-white" />
+                <UserIcon className="h-8 w-8 text-white" />
               </div>
               <div className="ml-4">
                 <h3 className="text-lg leading-6 font-medium text-white font-serif">
-                  {student?.StudentName}
+                  {student?.name}
                 </h3>
                 <p className="text-sm text-blue-100">Student</p>
               </div>
@@ -98,10 +96,12 @@ const Profile: React.FC = () => {
             <dl className="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
               <div className="sm:col-span-1">
                 <dt className="text-sm font-medium text-gray-500 flex items-center">
-                  <Hash className="h-4 w-4 mr-2" />
-                  NM ID
+                  <Fingerprint className="h-4 w-4 mr-2" />
+                  Roll No
                 </dt>
-                <dd className="mt-1 text-sm text-gray-900">{user?.nmId}</dd>
+                <dd className="mt-1 text-sm text-gray-900">
+                  {student?.RollNo}
+                </dd>
               </div>
               <div className="sm:col-span-1">
                 <dt className="text-sm font-medium text-gray-500 flex items-center">
@@ -112,81 +112,23 @@ const Profile: React.FC = () => {
               </div>
               <div className="sm:col-span-1">
                 <dt className="text-sm font-medium text-gray-500 flex items-center">
-                  <BookOpen className="h-4 w-4 mr-2" />
-                  Semester
-                </dt>
-                <dd className="mt-1 text-sm text-gray-900">{student?.Semester}</dd>
-              </div>
-              <div className="sm:col-span-1">
-                <dt className="text-sm font-medium text-gray-500 flex items-center">
-                  <GraduationCap className="h-4 w-4 mr-2" />
-                  Course
-                </dt>
-                <dd className="mt-1 text-sm text-gray-900">
-                  {student?.CourseName}
-                </dd>
-              </div>
-              <div className="sm:col-span-1">
-                <dt className="text-sm font-medium text-gray-500 flex items-center">
-                  <Book className="h-4 w-4 mr-2" />
-                  Department
-                </dt>
-                <dd className="mt-1 text-sm text-gray-900">
-                  {student?.Branch}
-                </dd>
-              </div>
-              <div className="sm:col-span-1">
-                <dt className="text-sm font-medium text-gray-500 flex items-center">
-                  <Fingerprint className="h-4 w-4 mr-2" />
-                  Roll No
-                </dt>
-                <dd className="mt-1 text-sm text-gray-900">
-                  {student?.StudentRollNo}
-                </dd>
-              </div>
-              <div className="sm:col-span-1">
-                <dt className="text-sm font-medium text-gray-500 flex items-center">
                   <Building className="h-4 w-4 mr-2" />
                   College Name
                 </dt>
                 <dd className="mt-1 text-sm text-gray-900">
-                  {student?.CollegeName}
+                  {student?.college}
                 </dd>
               </div>
               <div className="sm:col-span-1">
                 <dt className="text-sm font-medium text-gray-500 flex items-center">
-                  <Code className="h-4 w-4 mr-2" />
-                  College Code
+                  <Phone className="h-4 w-4 mr-2" />
+                  Phone Number
                 </dt>
                 <dd className="mt-1 text-sm text-gray-900">
-                  {student?.CollegeCode}
-                </dd>
-              </div>
-              <div className="sm:col-span-1">
-                <dt className="text-sm font-medium text-gray-500 flex items-center">
-                  <Users className="h-4 w-4 mr-2" />
-                  Team Name
-                </dt>
-                <dd className="mt-1 text-sm text-gray-900">{user?.teamname}</dd>
-              </div>
-              <div className="sm:col-span-1">
-                <dt className="text-sm font-medium text-gray-500 flex items-center">
-                  <School className="h-4 w-4 mr-2" />
-                  University Name
-                </dt>
-                <dd className="mt-1 text-sm text-gray-900">
-                  {student?.UniversityName}
+                  {student?.phone}
                 </dd>
               </div>
             </dl>
-          </div>
-          <div className="bg-gray-50 px-4 py-4 sm:px-6">
-            <div className="text-sm">
-              <p className="font-medium text-gray-700">Account Status</p>
-              <p className="mt-1 text-gray-600">
-                Your account is active and in good standing.
-              </p>
-            </div>
           </div>
         </div>
       </main>

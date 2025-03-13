@@ -97,7 +97,7 @@ const SignupForm: React.FC = () => {
       if (upload) {
         // console.log("upload", upload);
         const addRecords = async () => {
-          await signup(rollNo, email, password, teamname, name)
+          await signup(rollNo, email, password, teamname, name, phone)
             .then(() => {
               setSuccess(
                 "Account created! Please verify your email before logging in."

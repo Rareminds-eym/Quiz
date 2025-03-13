@@ -113,7 +113,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     email: string,
     password: string,
     teamname: string,
-    name: string
+    name: string,
+    phone: string
   ) => {
     try {
       const userCredential = await createUserWithEmailAndPassword(
@@ -131,6 +132,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         email,
         college: teamname,
         name,
+        phone,
       };
 
       await setDoc(doc(db, "users", nmId), userData)
